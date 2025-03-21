@@ -20,10 +20,10 @@ export default function Home() {
         "Developed a React-based UI with a Flask backend, allowing users to upload images or text descriptions for reverse product search.",
         "Integrated Qdrant vector database, enabling fast and efficient nearest-neighbor searches to match uploaded images with similar clothing items.",
       ],
-      technologies: ["React", "Node.js", "MongoDB", "Socket.io", "Tailwind CSS"],
+      technologies: ["React", "Flask", "OpenAICLIP", "QdrantDB","PyTorch"],
       imageUrl: "/images/threadconnectimage.png",
-      demoUrl: "https://threadconnect-demo.com",
-      githubUrl: "https://github.com/yourusername/threadconnect"
+      demoUrl: "",
+      githubUrl: ""
     },
     {
       title: "Stock Tester (Personal Project)",
@@ -33,10 +33,10 @@ export default function Home() {
         "Implemented a financial data pipeline that fetches real-time stock prices, historical market trends, and technical indicators to provide comprehensive analysis for trading decisions.",
         "Integrated a back-testing system, enabling users to evaluate and refine trading strategies using historical data to simulate performance in real-world scenarios."
       ],
-      technologies: ["Python", "TensorFlow", "React", "FastAPI", "PostgreSQL"],
+      technologies: ["Django", "PostgreSQL", "Pandas", "TensorFlow"],
       imageUrl: "/images/project2.png",
-      demoUrl: "https://stocktester-demo.com",
-      githubUrl: "https://github.com/yourusername/stocktester"
+      demoUrl: "",
+      githubUrl: ""
     },
     {
       title: "Ebay Resell Helper (Personal Project)",
@@ -46,10 +46,10 @@ export default function Home() {
         "Created a responsive Angular frontend with a search functionality, resell score visualization, and watchlist to track products.",
         "Integrated a Flask REST API and MongoDB database for evaluating products and storing user data, ensuring scalability and performance."
       ],
-      technologies: ["Next.js", "TypeScript", "Prisma", "PostgreSQL", "D3.js"],
+      technologies: ["Next.js", "Angular", "MongoDB", "Flask"],
       imageUrl: "/images/project3.png",
-      demoUrl: "https://ebayresell-demo.com",
-      githubUrl: "https://github.com/yourusername/ebayresell"
+      demoUrl: "",
+      githubUrl: ""
     }
   ];
 
@@ -59,29 +59,29 @@ export default function Home() {
       title: "Software Developer",
       company: "Unlocking Doors",
       period: "Spring 2024",
-      description: "Developed and maintained web applications using React and Node.js. Collaborated with cross-functional teams to deliver high-quality software solutions.",
-      technologies: ["React", "Node.js", "TypeScript", "MongoDB"]
+      description: "Worked with a nonprofit to develop a secure contact management system, enabling efficient role-based data organization for staff assisting formerly incarcerated individuals.",
+      technologies: ["Vue.js", "Node.js", "Docker", "PostgreSQL"]
     },
     {
       title: "UG Research Assistant",
       company: "The University of Texas at Dallas",
       period: "Summer 2024",
-      description: "Built and deployed full-stack applications using modern web technologies. Implemented responsive design and optimized application performance.",
-      technologies: ["Next.js", "Python", "PostgreSQL", "AWS"]
+      description: "Collaborated with 2 PhD candidates to improve a Python decompiler using NLP techniques for PYC file decoding. Enhanced the platform's security and tracking capabilities while streamlining the manual patch submission process.",
+      technologies: ["Python", "NLP", "MongoDB"]
     },
     {
       title: "AIM Project Mentee",
-      company: "Company 3",
+      company: "Artificial Intelligence Society",
       period: "Fall 2024",
-      description: "Created user interfaces and interactive components for web applications. Focused on accessibility and user experience improvements.",
-      technologies: ["React", "Tailwind CSS", "JavaScript", "Git"]
+      description: "Participated in a mentorship-driven program focused on artificial intelligence applications. Designed and built ThreadConnect, a clothing search platform leveraging OpenAI's CLIP model and vector databases for image-based product matching.",
+      technologies: ["Pytorch", "React", "Flask"]
     },
     {
       title: "Development Officer",
       company: "Association of Computer Machinery",
-      period: "Summer 2022",
-      description: "Developed and maintained server-side applications and APIs. Implemented security measures and optimized database queries.",
-      technologies: ["Java", "Spring Boot", "MySQL", "Docker"]
+      period: "Spring 2025",
+      description: "Working with a team of five officers to build a centralized platform for student organizations at UTD.",
+      technologies: ["Next.js", "Supabase", "Typescript", "Tailwind CSS"]
     }
   ];
  
@@ -99,7 +99,16 @@ export default function Home() {
   }, []);
 
   const scrollToProjects = () => {
-    document.getElementById('projects-section')?.scrollIntoView({ behavior: 'smooth' });
+    const element = document.getElementById('projects-section');
+    if (element) {
+      const offset = 100; // Adjust this value as needed
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
   };
 
   return (
@@ -107,61 +116,53 @@ export default function Home() {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
         {/* Left side - Name and Bio */}
         <div className="md:col-span-5">
-          <h1 className="text-5xl font-bold mb-6 flex items-center text-white">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 flex items-center text-white">
             <span>{text}</span>
             <span className="animate-blink">|</span>
           </h1>
          
-          <div className="bg-slate-800/80 p-4 rounded-md mb-8 backdrop-blur-sm w-[800px]">
+          <div className="bg-slate-800/80 p-4 rounded-md mb-8 backdrop-blur-sm w-full md:w-[800px]">
             <p className="text-gray-100">
-            I am a full-stack developer studying at the University of Texas at Dallas. I have worked on various projects spanning web development, machine learning, and backend systems. My experience includes contributing to research, leading software development for organizations, and building applications that solve real-world problems. Check out my projects and experiences below!
-
+              I am a full-stack developer studying at the University of Texas at Dallas. I have worked on various projects spanning web development, machine learning, and backend systems. My experience includes contributing to research, leading software development for organizations, and building applications that solve real-world problems. Check out my projects and experiences below!
             </p>
           </div>
         </div>
         
-        {/* Right side - Currently working on */}
-        <div className="md:col-span-7">
-          
-        </div>
       </div>
       
-      {/* Project Preview and This Will Do section in a new grid row */}
+      {/* Project Preview and Currently Working On section */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mt-2">
-        {/* Project Preview - below personal description */}
-        <div className="md:col-span-8">
-          <div className="h-[300px] w-[800px] rounded-md relative overflow-hidden">
+        {/* Project Preview */}
+        <div className="md:col-span-7">
+          <div className="h-[300px] w-full md:w-[800px] rounded-md relative overflow-hidden">
             <Image
               src="/images/current.png"
               alt="Project Preview"
               fill
-              className="object-contain object-right"
+              className="object-contain object-center"
               priority
             />
-          </div>
-        </div>
-        
-        {/* "This will do" section - to the right of project preview */}
-        <div className="md:col-span-4">
-          <div className="bg-slate-800/80 p-6 rounded-md shadow-sm h-[200px] backdrop-blur-sm flex flex-col justify-center border border-slate-700">
-            <h3 className="text-2xl font-semibold mb-4 text-white">This will do</h3>
-            <div className="space-y-3">
-              <p className="text-gray-100 text-lg">using ...</p>
-              <p className="text-gray-100 text-lg">to do ... for its user</p>
+            {/* View All Projects Button - Right aligned over image */}
+            <div className="absolute right-4 bottom-4">
+              <button
+                onClick={scrollToProjects}
+                className="w-12 h-12 rounded-full bg-blue-600 hover:bg-blue-700 transition-colors flex items-center justify-center group relative z-10"
+              >
+                <span className="text-xl animate-bounce-arrow group-hover:translate-y-1 transition-transform">↓</span>
+              </button>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* View All Projects Button - below both boxes */}
-      <div className="flex justify-center mt-8">
-        <button
-          onClick={scrollToProjects}
-          className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2 group"
-        >
-          View All Projects
-          <span className="animate-bounce-arrow group-hover:translate-y-1 transition-transform">↓</span>
-        </button>
+        {/* Currently Working On section */}
+        <div className="md:col-span-5">
+          <div className="bg-slate-800/80 p-6 rounded-md shadow-sm backdrop-blur-sm border border-slate-700 h-[300px] overflow-y-auto">
+            <h3 className="text-2xl font-semibold mb-4 text-white">Currently Working On</h3>
+            <p className="text-gray-100 text-lg leading-relaxed">
+              I am collaborating with a team to build OrgPortal, a full-stack web application designed to streamline the management and discovery of student organizations at UTD. The platform provides a centralized space for students to explore clubs, manage memberships, and stay updated on events, all within an intuitive and scalable system.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Projects Section */}

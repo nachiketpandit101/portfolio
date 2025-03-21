@@ -2,11 +2,12 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { Mail, Linkedin, Github } from 'lucide-react';
 
 interface SocialLink {
   name: string;
   url: string;
-  icon: string;
+  icon: React.ReactNode;
   color: string;
   hoverColor: string;
 }
@@ -17,23 +18,23 @@ export default function Contact() {
   const socialLinks: SocialLink[] = [
     {
       name: 'Email',
-      url: 'mailto:your.email@example.com',
-      icon: '✉️',
+      url: 'mailto:nachiketpandit101@gmail.com',
+      icon: <Mail className="w-8 h-8" />,
       color: 'bg-red-500/20',
       hoverColor: 'bg-red-500/30'
     },
     {
       name: 'LinkedIn',
-      url: 'https://linkedin.com/in/yourprofile',
-      icon: '💼',
+      url: 'https://www.linkedin.com/in/nachiket-pandit-80050b2b2/',
+      icon: <Linkedin className="w-8 h-8" />,
       color: 'bg-blue-500/20',
       hoverColor: 'bg-blue-500/30'
     },
     {
       name: 'GitHub',
-      url: 'https://github.com/yourusername',
-      icon: '💻',
-      color: 'bg-gray-500/20',
+      url: 'https://github.com/nachiketpandit101',
+      icon: <Github className="w-8 h-8" />,
+      color: 'bg-green-500/20',
       hoverColor: 'bg-gray-500/30'
     }
   ];
@@ -60,13 +61,17 @@ export default function Contact() {
                 backdrop-blur-sm
                 transform hover:scale-105
                 border border-white/10
+                h-[200px] w-full
+                flex flex-col justify-between
               `}>
-                <div className="text-4xl mb-4">{link.icon}</div>
-                <h3 className="text-xl font-semibold text-white mb-2">{link.name}</h3>
-                <div className="text-gray-300 text-sm">
-                  {link.name === 'Email' ? 'your.email@example.com' : 
-                   link.name === 'LinkedIn' ? 'linkedin.com/in/yourprofile' : 
-                   'github.com/yourusername'}
+                <div>
+                  <div className="text-white mb-4">{link.icon}</div>
+                  <h3 className="text-xl font-semibold text-white mb-2">{link.name}</h3>
+                  <div className="text-gray-300 text-sm">
+                    {link.name === 'Email' ? 'nachiketpandit101@gmail.com' : 
+                     link.name === 'LinkedIn' ? 'linkedin.com/in/nachiket-pandit-80050b2b2' : 
+                     'github.com/nachiketpandit'}
+                  </div>
                 </div>
                 
                 {/* Hover effect line */}

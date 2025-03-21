@@ -22,18 +22,26 @@ export default function RootLayout({
       <body className={`${inter.className} bg-black text-white min-h-screen bg-cover bg-center bg-no-repeat`} 
         style={{ backgroundImage: "url('/images/background.jpg')" }}>
         <div className="min-h-screen flex flex-col">
-          <header className="p-6 flex justify-between items-center border-b border-gray-800">
+          <header className="fixed top-0 left-0 right-0 p-6 flex justify-between items-center border-b border-gray-800 bg-black/40 backdrop-blur-sm z-50">
             <div>
               <Link href="/" aria-label="Home">
-                <div className="h-8 w-8 rounded-full bg-red-500" />
+                <div className="h-8 w-8 rounded-full bg-red-500 overflow-hidden">
+                  <Image 
+                    src="/images/Nachiket pandit.png" 
+                    alt="Logo" 
+                    width={32} 
+                    height={32} 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               </Link>
             </div>
             <Navigation />
           </header>
          
-          <main className="flex-grow relative overflow-hidden">
+          <main className="flex-grow relative overflow-hidden pt-24">
             {/* Bottom-left puzzle piece */}
-            <div className="absolute top-50 -left-24 w-96 h-96 z-0">
+            <div className="absolute bottom-0 left-0 w-96 h-96 z-0">
               <Image 
                 src="/images/puzzlepiece.png" 
                 alt="Puzzle piece decoration" 
@@ -44,12 +52,12 @@ export default function RootLayout({
             </div>
             
             {/* Top-right puzzle piece */}
-            <div className="absolute top-0 left-350 w-40 h-40 z-0">
+            <div className="absolute top-0 right-0 w-96 h-96 z-0">
               <Image 
                 src="/images/puzzlepiece.png" 
                 alt="Puzzle piece decoration" 
-                width={250} 
-                height={250}
+                width={384} 
+                height={384}
                 className="object-contain"
               />
             </div>
@@ -60,7 +68,7 @@ export default function RootLayout({
           </main>
          
           <footer className="p-4 border-t border-gray-800 text-center text-sm text-gray-500">
-            &copy; {new Date().getFullYear()} Nachiket Pandit. All rights reserved.
+            &copy; {new Date().getFullYear()} Nachiket Pandit
           </footer>
         </div>
       </body>
