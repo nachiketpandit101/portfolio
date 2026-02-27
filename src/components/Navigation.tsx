@@ -36,7 +36,6 @@ export default function Navigation() {
       >
         Contact
       </button>
-      
     </nav>
   );
 } 
