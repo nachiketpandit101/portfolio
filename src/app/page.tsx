@@ -79,9 +79,16 @@ export default function Home() {
     {
       title: "Development Officer",
       company: "Association of Computer Machinery",
-      period: "Spring 2025",
+      period: "Spring 2025 - Present",
       description: "Working with a team of five officers to build a centralized platform for student organizations at UTD.",
       technologies: ["Next.js", "Supabase", "Typescript", "Tailwind CSS"]
+    },
+    {
+      title: "Product Analyst - AI/ML Intern",
+      company: "Mr. Cooper Group",
+      period: "Summer 2025",
+      description: "Evaluated and optimized LLM prompts for an internal customer service call analyzer tool handling ∼2M calls per month. Led cross-functional meetings with developers and executives.",
+      technologies: []
     }
   ];
  
