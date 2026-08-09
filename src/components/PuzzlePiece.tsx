@@ -104,11 +104,15 @@ const PATHS: Record<PuzzleShape, string> = {
   ].join(" "),
 };
 
-const LABEL_OFFSET: Record<PuzzleShape, string> = {
-  "top-left": "translate(-8%, -8%)",
-  "top-right": "translate(6%, -8%)",
-  "bottom-left": "translate(-8%, 6%)",
-  "bottom-right": "translate(6%, 6%)",
+/**
+ * Visual body centers as % of the piece box (tabs/sockets ignored).
+ * Label is absolutely positioned here, then centered with -50%/-50%.
+ */
+const LABEL_ANCHOR: Record<PuzzleShape, { left: string; top: string }> = {
+  "top-left": { left: "39%", top: "39%" },
+  "top-right": { left: "55%", top: "39%" },
+  "bottom-left": { left: "39%", top: "56%" },
+  "bottom-right": { left: "55%", top: "56%" },
 };
 
 function parseGradientColors(gradient: string): [string, string] {
@@ -131,6 +135,7 @@ export default function PuzzlePiece({
   const gradId = `pg-${rawId}`;
   const noiseId = `pn-${rawId}`;
   const fiberId = `pf-${rawId}`;
+  const clipId = `pc-${rawId}`;
   const [c0, c1] = parseGradientColors(gradient);
   const path = PATHS[shape];
 
@@ -141,7 +146,7 @@ export default function PuzzlePiece({
       onClick={onClick}
       aria-label={disabled ? `${label} (coming soon)` : `Go to ${label}`}
       className={[
-        "puzzle-piece relative w-full h-full overflow-visible",
+        "puzzle-piece relative w-full h-full overflow-hidden",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900",
         disabled
           ? "cursor-default"
@@ -151,7 +156,7 @@ export default function PuzzlePiece({
     >
       <svg
         className={[
-          "absolute inset-0 h-full w-full overflow-visible",
+          "absolute inset-0 h-full w-full overflow-hidden",
           disabled ? "opacity-75" : "",
         ].join(" ")}
         viewBox="-4 -4 108 108"
@@ -160,6 +165,10 @@ export default function PuzzlePiece({
         focusable="false"
       >
         <defs>
+          <clipPath id={clipId}>
+            <path d={path} />
+          </clipPath>
+
           <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor={c0} />
             <stop offset="100%" stopColor={c1} />
@@ -167,10 +176,11 @@ export default function PuzzlePiece({
 
           <filter
             id={noiseId}
-            x="-30%"
-            y="-30%"
-            width="160%"
-            height="160%"
+            x="0%"
+            y="0%"
+            width="100%"
+            height="100%"
+            filterUnits="objectBoundingBox"
             colorInterpolationFilters="sRGB"
           >
             <feTurbulence
@@ -187,7 +197,10 @@ export default function PuzzlePiece({
                       0 0 0 0 0.22
                       0 0 0 0.5 0"
               in="noise"
+              result="mono"
             />
+            {/* Keep grain only where the piece fill exists */}
+            <feComposite in="mono" in2="SourceAlpha" operator="in" />
           </filter>
 
           <pattern
@@ -207,50 +220,54 @@ export default function PuzzlePiece({
           </pattern>
         </defs>
 
-        <path d={path} fill={`url(#${gradId})`} />
-        <path
-          d={path}
-          fill={`url(#${fiberId})`}
-          style={{ mixBlendMode: "soft-light" }}
-          opacity={0.9}
-        />
-        <path
-          d={path}
-          filter={`url(#${noiseId})`}
-          style={{ mixBlendMode: "multiply" }}
-          opacity={0.4}
-        />
-        <path
-          d={path}
-          fill="none"
-          stroke="rgba(255,255,255,0.3)"
-          strokeWidth={1.1}
-        />
-        <path
-          d={path}
-          fill="none"
-          stroke="rgba(0,0,0,0.25)"
-          strokeWidth={1.8}
-          opacity={0.45}
-          transform="translate(0.5 0.7)"
-        />
+        {/* All fills + texture strictly inside the piece silhouette */}
+        <g clipPath={`url(#${clipId})`}>
+          <path d={path} fill={`url(#${gradId})`} />
+          <path
+            d={path}
+            fill={`url(#${fiberId})`}
+            style={{ mixBlendMode: "soft-light" }}
+            opacity={0.9}
+          />
+          <path
+            d={path}
+            filter={`url(#${noiseId})`}
+            style={{ mixBlendMode: "multiply" }}
+            opacity={0.4}
+          />
+          <path
+            d={path}
+            fill="none"
+            stroke="rgba(255,255,255,0.3)"
+            strokeWidth={1.1}
+          />
+          <path
+            d={path}
+            fill="none"
+            stroke="rgba(0,0,0,0.25)"
+            strokeWidth={1.8}
+            opacity={0.45}
+            transform="translate(0.5 0.7)"
+          />
+        </g>
       </svg>
 
       <span
-        className="pointer-events-none absolute inset-0 flex items-center justify-center"
+        className={[
+          "pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-1/2",
+          "px-2 text-center font-semibold tracking-wide",
+          "text-sm sm:text-base md:text-lg select-none leading-tight",
+          "text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]",
+          "max-w-[55%]",
+          disabled ? "text-white/80" : "",
+        ].join(" ")}
+        style={{
+          left: LABEL_ANCHOR[shape].left,
+          top: LABEL_ANCHOR[shape].top,
+        }}
         aria-hidden
       >
-        <span
-          className={[
-            "px-3 text-center font-semibold tracking-wide",
-            "text-sm sm:text-base md:text-lg select-none",
-            "text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]",
-            disabled ? "text-white/80" : "",
-          ].join(" ")}
-          style={{ transform: LABEL_OFFSET[shape] }}
-        >
-          {children ?? label}
-        </span>
+        {children ?? label}
       </span>
     </button>
   );
