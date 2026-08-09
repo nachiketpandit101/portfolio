@@ -25,27 +25,29 @@ export default function Home() {
       githubUrl: ""
     },
     {
-      title: "Stock Tester (Personal Project)",
-      shortDescription: "A Django-based stock analysis platform that combines financial data retrieval, back-testing, and predictive modeling. The system leverages LSTM (Long Short-Term Memory) neural networks for stock price forecasting, providing insights for data-driven trading strategies.",
+      title: "OrgPortal (Personal Project)",
+      shortDescription: "A full-stack club management platform built with Next.js and Supabase PostgreSQL, serving 300+ users across various university organizations by centralizing event coordination, member administration, and club discovery.",
       bulletPoints: [
-        "Developed a Django web interface for seamless data visualization and trade simulation.",
-        "Implemented a financial data pipeline that fetches real-time stock prices, historical market trends, and technical indicators to provide comprehensive analysis for trading decisions.",
-        "Integrated a back-testing system, enabling users to evaluate and refine trading strategies using historical data to simulate performance in real-world scenarios."
+        "Built a full-stack club management platform serving 300+ users across various UTD organizations, centralizing event coordination, member management, and club discovery.",
+        "Developed an admin dashboard enabling officers to manage club profiles, create events/forms, control member access, and configure custom roles with granular permissions for page-level and content visibility.",
+        "Implemented Row Level Security (RLS) policies in Supabase to enforce role-based access control at the database layer, ensuring authorized data querying and modification."
       ],
-      technologies: ["Django", "PostgreSQL", "Pandas", "TensorFlow"],
-      imageUrl: "/images/project2.png",
+      technologies: ["Next.js", "PostgreSQL", "Supabase", "TypeScript"],
+      imageUrl: "/images/orgportal1.png",
+      imageUrls: ["/images/orgportal1.png", "/images/orgportal2.png"],
       demoUrl: "",
       githubUrl: ""
     },
     {
-      title: "Ebay Resell Helper (Personal Project)",
-      shortDescription: "A full-stack web application designed to assess eBay product profitability by processing data from over 10,000 eBay listings through the eBay API. The app helps resellers determine the potential profitability of products based on various evaluation algorithms.",
+      title: "eBay Resell Helper (Personal Project)",
+      shortDescription:
+        "A full-stack web app that ingests live eBay listings via the eBay Browse API, scores them for resale profitability, and lets users bookmark the best opportunities.",
       bulletPoints: [
-        "Developed a full-stack web app with Angular, Flask, and MongoDB for real-time product profitability analysis",
-        "Created a responsive Angular frontend with a search functionality, resell score visualization, and watchlist to track products.",
-        "Integrated a Flask REST API and MongoDB database for evaluating products and storing user data, ensuring scalability and performance."
+        "Built a full-stack app with Svelte 5, Spring Boot (Java 21), and MongoDB to sync, score, and search live eBay listings.",
+        "Implemented cohort-based profitability scoring (margin, shipping, demand) with a searchable UI, score visuals, dashboard stats, and a watchlist.",
+        "Integrated the eBay Browse API with OAuth, rate limiting, and retries; exposed a Spring Boot REST API backed by MongoDB Atlas."
       ],
-      technologies: ["Next.js", "Angular", "MongoDB", "Flask"],
+      technologies: ["Svelte", "Spring Boot", "MongoDB", "eBay API"],
       imageUrl: "/images/project3.png",
       demoUrl: "",
       githubUrl: ""
