@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import ProjectCarousel from "@/components/ProjectCarousel";
 import ExperienceTimeline from "@/components/ExperienceTimeline";
 import Contact from "@/components/Contact";
-import HeroPuzzle from "@/components/HeroPuzzle";
 
 export default function Home() {
   const [text, setText] = useState("");
@@ -108,30 +107,23 @@ export default function Home() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Split hero: bio stack + interlocking puzzle nav */}
-      <section className="grid grid-cols-1 md:grid-cols-12 gap-10 items-center mb-8">
-        <div className="md:col-span-5 space-y-6">
-          <h1 className="text-4xl md:text-5xl font-bold flex items-center text-white">
-            <span>{text}</span>
-            <span className="animate-blink">|</span>
-          </h1>
+      <section className="max-w-2xl space-y-6 mb-8">
+        <h1 className="text-4xl md:text-5xl font-bold flex items-center text-white">
+          <span>{text}</span>
+          <span className="animate-blink">|</span>
+        </h1>
 
-          <div className="bg-slate-800/80 p-4 rounded-md backdrop-blur-sm border border-slate-700">
-            <p className="text-gray-100 text-sm md:text-base leading-relaxed">
-              Full-stack developer at UT Dallas. I build web apps, ML systems, and backends—from research work to tools that solve real problems.
-            </p>
-          </div>
-
-          <div className="bg-slate-800/80 p-4 rounded-md backdrop-blur-sm border border-slate-700">
-            <h3 className="text-lg font-semibold mb-2 text-white">Currently Working On</h3>
-            <p className="text-gray-100 text-sm md:text-base leading-relaxed">
-              Building OrgPortal with ACM—a centralized platform for discovering and managing student orgs at UTD.
-            </p>
-          </div>
+        <div className="bg-slate-800/80 p-4 rounded-md backdrop-blur-sm border border-slate-700">
+          <p className="text-gray-100 text-sm md:text-base leading-relaxed">
+            Full-stack developer at UT Dallas. I build web apps, ML systems, and backends—from research work to tools that solve real problems.
+          </p>
         </div>
 
-        <div className="md:col-span-7 flex justify-center md:justify-end md:pr-20 lg:pr-28">
-          <HeroPuzzle />
+        <div className="bg-slate-800/80 p-4 rounded-md backdrop-blur-sm border border-slate-700">
+          <h3 className="text-lg font-semibold mb-2 text-white">Currently Working On</h3>
+          <p className="text-gray-100 text-sm md:text-base leading-relaxed">
+            Building OrgPortal with ACM—a centralized platform for discovering and managing student orgs at UTD.
+          </p>
         </div>
       </section>
 
