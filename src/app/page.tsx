@@ -1,10 +1,9 @@
 "use client"
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import ProjectCarousel from "@/components/ProjectCarousel";
 import ExperienceTimeline from "@/components/ExperienceTimeline";
 import Contact from "@/components/Contact";
-import Image from "next/image";
+import HeroPuzzle from "@/components/HeroPuzzle";
 
 export default function Home() {
   const [text, setText] = useState("");
@@ -105,72 +104,34 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
-  const scrollToProjects = () => {
-    const element = document.getElementById('projects-section');
-    if (element) {
-      const offset = 100; // Adjust this value as needed
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - offset;
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
-    }
-  };
-
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-        {/* Left side - Name and Bio */}
-        <div className="md:col-span-5">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 flex items-center text-white">
+      {/* Split hero: bio stack + interlocking puzzle nav */}
+      <section className="grid grid-cols-1 md:grid-cols-12 gap-10 items-center mb-8">
+        <div className="md:col-span-5 space-y-6">
+          <h1 className="text-4xl md:text-5xl font-bold flex items-center text-white">
             <span>{text}</span>
             <span className="animate-blink">|</span>
           </h1>
-         
-          <div className="bg-slate-800/80 p-4 rounded-md mb-8 backdrop-blur-sm w-full md:w-[800px]">
-            <p className="text-gray-100">
-              I am a full-stack developer studying at the University of Texas at Dallas. I have worked on various projects spanning web development, machine learning, and backend systems. My experience includes contributing to research, leading software development for organizations, and building applications that solve real-world problems. Check out my projects and experiences below!
+
+          <div className="bg-slate-800/80 p-4 rounded-md backdrop-blur-sm border border-slate-700">
+            <p className="text-gray-100 text-sm md:text-base leading-relaxed">
+              Full-stack developer at UT Dallas. I build web apps, ML systems, and backends—from research work to tools that solve real problems.
             </p>
           </div>
-        </div>
-        
-      </div>
-      
-      {/* Project Preview and Currently Working On section */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mt-2">
-        {/* Project Preview */}
-        <div className="md:col-span-7">
-          <div className="h-[300px] w-full md:w-[800px] rounded-md relative overflow-hidden">
-            <Image
-              src="/images/current.png"
-              alt="Project Preview"
-              fill
-              className="object-contain object-center"
-              priority
-            />
-            {/* View All Projects Button - Right aligned over image */}
-            <div className="absolute right-4 bottom-4">
-              <button
-                onClick={scrollToProjects}
-                className="w-12 h-12 rounded-full bg-blue-600 hover:bg-blue-700 transition-colors flex items-center justify-center group relative z-10"
-              >
-                <span className="text-xl animate-bounce-arrow group-hover:translate-y-1 transition-transform">↓</span>
-              </button>
-            </div>
+
+          <div className="bg-slate-800/80 p-4 rounded-md backdrop-blur-sm border border-slate-700">
+            <h3 className="text-lg font-semibold mb-2 text-white">Currently Working On</h3>
+            <p className="text-gray-100 text-sm md:text-base leading-relaxed">
+              Building OrgPortal with ACM—a centralized platform for discovering and managing student orgs at UTD.
+            </p>
           </div>
         </div>
 
-        {/* Currently Working On section */}
-        <div className="md:col-span-5">
-          <div className="bg-slate-800/80 p-6 rounded-md shadow-sm backdrop-blur-sm border border-slate-700 h-[300px] overflow-y-auto">
-            <h3 className="text-2xl font-semibold mb-4 text-white">Currently Working On</h3>
-            <p className="text-gray-100 text-lg leading-relaxed">
-              I am collaborating with a team to build OrgPortal, a full-stack web application designed to streamline the management and discovery of student organizations at UTD. The platform provides a centralized space for students to explore clubs, manage memberships, and stay updated on events, all within an intuitive and scalable system.
-            </p>
-          </div>
+        <div className="md:col-span-7 flex justify-center md:justify-end">
+          <HeroPuzzle />
         </div>
-      </div>
+      </section>
 
       {/* Projects Section */}
       <div id="projects-section" className="mt-32 mb-16">

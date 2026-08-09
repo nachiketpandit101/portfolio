@@ -40,3 +40,43 @@ body {
   animation: bounce 1.5s infinite;
   display: inline-block;
 }
+
+/* 2×2 interlocking puzzle board — pieces overlap so tabs seat into sockets */
+.puzzle-board {
+  --puzzle-overlap: 16%;
+  --puzzle-size: calc(50% + var(--puzzle-overlap) / 2);
+}
+
+.puzzle-slot {
+  position: absolute;
+  width: var(--puzzle-size);
+  height: var(--puzzle-size);
+}
+
+.puzzle-slot-tl {
+  top: 0;
+  left: 0;
+  z-index: 4;
+}
+
+.puzzle-slot-tr {
+  top: 0;
+  right: 0;
+  z-index: 3;
+}
+
+.puzzle-slot-bl {
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+}
+
+.puzzle-slot-br {
+  bottom: 0;
+  right: 0;
+  z-index: 1;
+}
+
+.puzzle-piece:focus-visible {
+  z-index: 5;
+}
