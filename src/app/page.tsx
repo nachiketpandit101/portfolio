@@ -128,7 +128,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="md:col-span-7 flex justify-center md:justify-end">
+        <div className="md:col-span-7 flex justify-center md:justify-end md:pr-20 lg:pr-28">
           <HeroPuzzle />
         </div>
       </section>

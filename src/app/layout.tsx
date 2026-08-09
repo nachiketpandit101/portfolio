@@ -41,24 +41,24 @@ export default function RootLayout({
          
           <main className="flex-grow relative overflow-hidden pt-24">
             {/* Bottom-left puzzle piece */}
-            <div className="absolute bottom-0 left-0 w-96 h-96 z-0">
+            <div className="absolute bottom-0 left-0 w-96 h-96 z-0 pointer-events-none">
               <Image 
                 src="/images/puzzlepiece.png" 
-                alt="Puzzle piece decoration" 
+                alt="" 
                 width={384} 
                 height={384}
-                className="object-contain"
+                className="object-contain opacity-90"
               />
             </div>
             
-            {/* Top-right puzzle piece */}
-            <div className="absolute top-0 right-0 w-96 h-96 z-0">
+            {/* Top-right decorative piece — above page content, non-interactive */}
+            <div className="absolute top-0 right-0 w-80 h-80 md:w-96 md:h-96 z-20 pointer-events-none">
               <Image 
                 src="/images/puzzlepiece.png" 
-                alt="Puzzle piece decoration" 
+                alt="" 
                 width={384} 
                 height={384}
-                className="object-contain"
+                className="object-contain opacity-90"
               />
             </div>
            

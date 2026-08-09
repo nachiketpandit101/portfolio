@@ -43,14 +43,17 @@ body {
 
 /* 2×2 interlocking puzzle board — pieces overlap so tabs seat into sockets */
 .puzzle-board {
-  --puzzle-overlap: 16%;
+  /* Slightly more overlap for fuller round knobs */
+  --puzzle-overlap: 20%;
   --puzzle-size: calc(50% + var(--puzzle-overlap) / 2);
+  overflow: visible;
 }
 
 .puzzle-slot {
   position: absolute;
   width: var(--puzzle-size);
   height: var(--puzzle-size);
+  overflow: visible;
 }
 
 .puzzle-slot-tl {

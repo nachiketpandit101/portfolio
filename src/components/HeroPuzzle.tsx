@@ -8,7 +8,7 @@ type PuzzleLink = {
   id: string;
   label: string;
   shape: PuzzleShape;
-  color: string;
+  gradient: string;
   sectionId?: string;
   disabled?: boolean;
   /** Initial scatter offset for the snap-in animation */
@@ -22,7 +22,8 @@ const PIECES: PuzzleLink[] = [
     id: "projects",
     label: "Projects",
     shape: "top-left",
-    color: "#1e4a6e",
+    // Periwinkle → cyan (matches puzzlepiece.png)
+    gradient: "linear-gradient(135deg, #5B7CFF 0%, #6EE3FF 100%)",
     sectionId: "projects-section",
     from: { x: -80, y: -60, rotate: -12 },
     className: "puzzle-slot puzzle-slot-tl",
@@ -31,7 +32,8 @@ const PIECES: PuzzleLink[] = [
     id: "about",
     label: "About",
     shape: "top-right",
-    color: "#245a7a",
+    // Violet → soft sky
+    gradient: "linear-gradient(135deg, #7B5CFF 0%, #8EB8FF 100%)",
     sectionId: "about-section",
     from: { x: 80, y: -60, rotate: 10 },
     className: "puzzle-slot puzzle-slot-tr",
@@ -40,7 +42,8 @@ const PIECES: PuzzleLink[] = [
     id: "contact",
     label: "Contact",
     shape: "bottom-left",
-    color: "#1a3f5c",
+    // Teal → aqua
+    gradient: "linear-gradient(135deg, #1FA8B8 0%, #6EF0D0 100%)",
     sectionId: "contact-section",
     from: { x: -80, y: 70, rotate: 8 },
     className: "puzzle-slot puzzle-slot-bl",
@@ -49,7 +52,8 @@ const PIECES: PuzzleLink[] = [
     id: "soon",
     label: "Coming Soon",
     shape: "bottom-right",
-    color: "#2a3544",
+    // Soft indigo → muted cyan
+    gradient: "linear-gradient(135deg, #4A6FA8 0%, #9BC4D8 100%)",
     disabled: true,
     from: { x: 80, y: 70, rotate: -8 },
     className: "puzzle-slot puzzle-slot-br",
@@ -83,7 +87,7 @@ export default function HeroPuzzle() {
 
   return (
     <motion.div
-      className="puzzle-board relative w-full max-w-lg mx-auto aspect-square"
+      className="puzzle-board relative w-full max-w-md mx-auto aspect-square"
       variants={containerVariants}
       initial="hidden"
       animate="show"
@@ -127,7 +131,7 @@ export default function HeroPuzzle() {
             <PuzzlePiece
               shape={piece.shape}
               label={piece.label}
-              color={piece.color}
+              gradient={piece.gradient}
               disabled={piece.disabled}
               onClick={
                 piece.sectionId
