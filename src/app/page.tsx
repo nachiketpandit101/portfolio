@@ -7,20 +7,7 @@ import HeroIntro from "@/components/HeroIntro";
 export default function Home() {
   const projects = [
     {
-      title: "ThreadConnect (Team Project)",
-      shortDescription: "A machine-learning-driven search tool that helps users find clothing alternatives by uploading an image or text description. The system leverages OpenAI's CLIP model for image-text similarity and a vector database (Qdrant) for fast, scalable retrieval.",
-      bulletPoints: [
-        "Trained CLIP on a fashion dataset, improving the accuracy of clothing attribute recognition.",
-        "Developed a React-based UI with a Flask backend, allowing users to upload images or text descriptions for reverse product search.",
-        "Integrated Qdrant vector database, enabling fast and efficient nearest-neighbor searches to match uploaded images with similar clothing items.",
-      ],
-      technologies: ["React", "Flask", "OpenAICLIP", "QdrantDB","PyTorch"],
-      imageUrl: "/images/threadconnectimage.png",
-      demoUrl: "",
-      githubUrl: ""
-    },
-    {
-      title: "OrgPortal (Personal Project)",
+      title: "OrgPortal (Team Project)",
       shortDescription: "A full-stack club management platform built with Next.js and Supabase PostgreSQL, serving 300+ users across various university organizations by centralizing event coordination, member administration, and club discovery.",
       bulletPoints: [
         "Built a full-stack club management platform serving 300+ users across various UTD organizations, centralizing event coordination, member management, and club discovery.",
@@ -30,7 +17,7 @@ export default function Home() {
       technologies: ["Next.js", "PostgreSQL", "Supabase", "TypeScript"],
       imageUrl: "/images/orgportal1.png",
       imageUrls: ["/images/orgportal1.png", "/images/orgportal2.png"],
-      demoUrl: "",
+      demoUrl: "https://org-portal.com/",
       githubUrl: ""
     },
     {
@@ -44,6 +31,20 @@ export default function Home() {
       ],
       technologies: ["Svelte", "Spring Boot", "MongoDB", "eBay API"],
       imageUrl: "/images/project3.png",
+      imageFit: "contain",
+      demoUrl: "",
+      githubUrl: ""
+    },
+    {
+      title: "ThreadConnect (Team Project)",
+      shortDescription: "A machine-learning-driven search tool that helps users find clothing alternatives by uploading an image or text description. The system leverages OpenAI's CLIP model for image-text similarity and a vector database (Qdrant) for fast, scalable retrieval.",
+      bulletPoints: [
+        "Trained CLIP on a fashion dataset, improving the accuracy of clothing attribute recognition.",
+        "Developed a React-based UI with a Flask backend, allowing users to upload images or text descriptions for reverse product search.",
+        "Integrated Qdrant vector database, enabling fast and efficient nearest-neighbor searches to match uploaded images with similar clothing items.",
+      ],
+      technologies: ["React", "Flask", "OpenAICLIP", "QdrantDB","PyTorch"],
+      imageUrl: "/images/threadconnectimage.png",
       demoUrl: "",
       githubUrl: ""
     }

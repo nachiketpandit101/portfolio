@@ -2,6 +2,17 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import {
+  motion,
+  AnimatePresence,
+  useReducedMotion,
+} from "framer-motion";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ExternalLink,
+  Github,
+} from "lucide-react";
 
 interface Project {
   title: string;
@@ -11,6 +22,8 @@ interface Project {
   imageUrl: string;
   /** Optional extra images — rotates through these (falls back to imageUrl alone). */
   imageUrls?: string[];
+  /** cover (default) crops tall shots; contain shows wide pages fully. */
+  imageFit?: "cover" | "contain";
   demoUrl?: string;
   githubUrl?: string;
 }
@@ -22,13 +35,14 @@ interface ProjectCarouselProps {
 function ProjectImage({
   images,
   alt,
+  fit = "cover",
 }: {
   images: string[];
   alt: string;
+  fit?: "cover" | "contain";
 }) {
   const [imageIndex, setImageIndex] = useState(0);
   const multi = images.length > 1;
-
   const imageKey = images.join("|");
 
   useEffect(() => {
@@ -39,37 +53,49 @@ function ProjectImage({
     if (!multi) return;
     const id = setInterval(() => {
       setImageIndex((i) => (i + 1) % images.length);
-    }, 3500);
+    }, 4000);
     return () => clearInterval(id);
   }, [multi, imageKey, images.length]);
 
+  const objectClass =
+    fit === "contain" ? "object-contain" : "object-cover object-top";
+
   return (
-    <div className="relative aspect-[4/3] mb-4">
-      {images.map((src, i) => (
-        <Image
-          key={src}
-          src={src}
-          alt={alt}
-          fill
-          className={`object-contain rounded-lg bg-slate-800/50 transition-opacity duration-700 ${
-            i === imageIndex ? "opacity-100" : "opacity-0"
-          }`}
-          priority={i === 0}
-        />
-      ))}
+    <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-[radial-gradient(ellipse_at_top,_#1e293b_0%,_#0f172a_55%,_#020617_100%)] ring-1 ring-white/10 shadow-[0_20px_50px_-24px_rgba(0,0,0,0.7)]">
+      <AnimatePresence initial={false} mode="sync">
+        <motion.div
+          key={images[imageIndex]}
+          className="absolute inset-0"
+          initial={{ opacity: 0, scale: 1.02 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <Image
+            src={images[imageIndex]}
+            alt={alt}
+            fill
+            className={objectClass}
+            sizes="(max-width: 768px) 100vw, 50vw"
+            priority
+          />
+        </motion.div>
+      </AnimatePresence>
+
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-white/[0.03]" />
 
       {multi && (
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+        <div className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 gap-1.5">
           {images.map((_, i) => (
             <button
               key={i}
               type="button"
               aria-label={`Show image ${i + 1}`}
               onClick={() => setImageIndex(i)}
-              className={`h-1.5 rounded-full transition-all ${
+              className={`h-1 rounded-full transition-all duration-300 ${
                 i === imageIndex
-                  ? "w-4 bg-white"
-                  : "w-1.5 bg-white/50 hover:bg-white/70"
+                  ? "w-6 bg-white"
+                  : "w-1.5 bg-white/40 hover:bg-white/70"
               }`}
             />
           ))}
@@ -81,156 +107,203 @@ function ProjectImage({
 
 export default function ProjectCarousel({ projects }: ProjectCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState(0);
+  const reduceMotion = useReducedMotion();
   const project = projects[currentIndex];
   const images =
     project.imageUrls && project.imageUrls.length > 0
       ? project.imageUrls
       : [project.imageUrl];
 
+  const goTo = (index: number) => {
+    setDirection(index > currentIndex ? 1 : -1);
+    setCurrentIndex(index);
+  };
+
   const nextSlide = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === projects.length - 1 ? 0 : prevIndex + 1
-    );
+    setDirection(1);
+    setCurrentIndex((prev) => (prev === projects.length - 1 ? 0 : prev + 1));
   };
 
   const prevSlide = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? projects.length - 1 : prevIndex - 1
-    );
+    setDirection(-1);
+    setCurrentIndex((prev) => (prev === 0 ? projects.length - 1 : prev - 1));
+  };
+
+  const slideVariants = {
+    enter: (dir: number) =>
+      reduceMotion
+        ? { opacity: 0 }
+        : { opacity: 0, x: dir > 0 ? 36 : -36 },
+    center: { opacity: 1, x: 0 },
+    exit: (dir: number) =>
+      reduceMotion
+        ? { opacity: 0 }
+        : { opacity: 0, x: dir > 0 ? -36 : 36 },
   };
 
   return (
     <div className="relative w-full">
+      {/* Desktop side controls */}
       <button
+        type="button"
         onClick={prevSlide}
-        className="absolute left-[-60px] top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white p-4 rounded-full transition-colors z-10"
+        aria-label="Previous project"
+        className="absolute -left-14 top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white backdrop-blur-md transition-all duration-300 hover:border-white/25 hover:bg-white/10 hover:scale-105 lg:flex"
       >
-        ←
+        <ChevronLeft className="h-5 w-5" />
       </button>
       <button
+        type="button"
         onClick={nextSlide}
-        className="absolute right-[-60px] top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white p-4 rounded-full transition-colors z-10"
+        aria-label="Next project"
+        className="absolute -right-14 top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white backdrop-blur-md transition-all duration-300 hover:border-white/25 hover:bg-white/10 hover:scale-105 lg:flex"
       >
-        →
+        <ChevronRight className="h-5 w-5" />
       </button>
 
-      <div className="flex flex-col md:flex-row gap-8 items-start">
-        <div className="w-full md:w-1/2">
-          <ProjectImage images={images} alt={project.title} />
+      <AnimatePresence mode="wait" custom={direction}>
+        <motion.div
+          key={project.title}
+          custom={direction}
+          variants={slideVariants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          className="grid gap-8 md:grid-cols-2 md:gap-10 md:items-center"
+        >
+          <div className="space-y-4">
+            <ProjectImage
+              images={images}
+              alt={project.title}
+              fit={project.imageFit}
+            />
 
-          <div className="flex gap-4 justify-center">
-            <button
-              disabled={!project.demoUrl}
-              className={`group relative px-6 py-2 rounded-lg overflow-hidden transition-all duration-300 ${
-                project.demoUrl
-                  ? "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
-                  : "bg-gray-700 text-gray-400 cursor-not-allowed"
-              }`}
-              onClick={() =>
-                project.demoUrl && window.open(project.demoUrl, "_blank")
-              }
-            >
-              <span className="relative z-10 flex items-center gap-2">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                  />
-                </svg>
-                {project.demoUrl ? "Live Demo" : "Coming Soon"}
-              </span>
-              {project.demoUrl && (
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300" />
-              )}
-            </button>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <button
+                type="button"
+                disabled={!project.demoUrl}
+                onClick={() =>
+                  project.demoUrl && window.open(project.demoUrl, "_blank")
+                }
+                className={`inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium transition-all duration-300 ${
+                  project.demoUrl
+                    ? "bg-[#5d6aff] text-white shadow-[0_10px_30px_-12px_rgba(93,106,255,0.7)] hover:bg-[#6f7aff] hover:scale-[1.02]"
+                    : "cursor-not-allowed border border-white/10 bg-white/5 text-white/40"
+                }`}
+              >
+                <ExternalLink className="h-4 w-4" />
+                {project.demoUrl ? "Live Demo" : "Demo soon"}
+              </button>
 
-            <button
-              disabled={!project.githubUrl}
-              className={`group relative px-6 py-2 rounded-lg overflow-hidden transition-all duration-300 ${
-                project.githubUrl
-                  ? "bg-gray-800 text-white hover:bg-gray-700 cursor-pointer"
-                  : "bg-gray-700 text-gray-400 cursor-not-allowed"
-              }`}
-              onClick={() =>
-                project.githubUrl && window.open(project.githubUrl, "_blank")
-              }
-            >
-              <span className="relative z-10 flex items-center gap-2">
-                <svg
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-                </svg>
-                {project.githubUrl ? "GitHub" : "Coming Soon"}
-              </span>
-              {project.githubUrl && (
-                <div className="absolute inset-0 bg-gradient-to-r from-gray-700 to-gray-800 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300" />
-              )}
-            </button>
-          </div>
-        </div>
-
-        <div className="w-full md:w-1/2 space-y-6">
-          <div>
-            <h3 className="text-2xl font-bold text-white mb-3">
-              {project.title}
-            </h3>
-            <p className="text-gray-300 text-base leading-relaxed">
-              {project.shortDescription}
-            </p>
-          </div>
-
-          <div>
-            <h4 className="text-lg font-semibold text-white mb-3">
-              Key Features
-            </h4>
-            <ul className="space-y-2">
-              {project.bulletPoints.map((point, index) => (
-                <li key={index} className="flex items-start text-gray-300">
-                  <span className="text-blue-400 mr-2">•</span>
-                  {point}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-lg font-semibold text-white mb-3">
-              Technologies Used
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {project.technologies.map((tech, index) => (
-                <span
-                  key={index}
-                  className="bg-blue-600/20 text-blue-300 px-3 py-1 rounded-full text-sm"
-                >
-                  {tech}
-                </span>
-              ))}
+              <button
+                type="button"
+                disabled={!project.githubUrl}
+                onClick={() =>
+                  project.githubUrl && window.open(project.githubUrl, "_blank")
+                }
+                className={`inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium transition-all duration-300 ${
+                  project.githubUrl
+                    ? "border border-white/15 bg-white/5 text-white hover:border-white/30 hover:bg-white/10 hover:scale-[1.02]"
+                    : "cursor-not-allowed border border-white/10 bg-white/5 text-white/40"
+                }`}
+              >
+                <Github className="h-4 w-4" />
+                {project.githubUrl ? "GitHub" : "Code soon"}
+              </button>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div className="flex justify-center space-x-2 mt-6">
-        {projects.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentIndex(index)}
-            className={`w-2 h-2 rounded-full transition-colors ${
-              index === currentIndex ? "bg-white" : "bg-white/50"
-            }`}
-          />
-        ))}
+          <div className="space-y-6">
+            <div>
+              <p className="mb-2 text-xs font-medium uppercase tracking-[0.2em] text-[#72e6ff]/90">
+                Project {String(currentIndex + 1).padStart(2, "0")} /{" "}
+                {String(projects.length).padStart(2, "0")}
+              </p>
+              <h3 className="text-2xl font-semibold tracking-tight text-white md:text-3xl">
+                {project.title}
+              </h3>
+              <p className="mt-3 text-base leading-relaxed text-white/70">
+                {project.shortDescription}
+              </p>
+            </div>
+
+            <div>
+              <h4 className="mb-3 text-sm font-medium uppercase tracking-[0.14em] text-white/45">
+                Highlights
+              </h4>
+              <ul className="space-y-2.5">
+                {project.bulletPoints.map((point, index) => (
+                  <li
+                    key={index}
+                    className="flex items-start gap-3 text-sm leading-relaxed text-white/75 md:text-[15px]"
+                  >
+                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#5d6aff]" />
+                    {point}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="mb-3 text-sm font-medium uppercase tracking-[0.14em] text-white/45">
+                Stack
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {project.technologies.map((tech) => (
+                  <span
+                    key={tech}
+                    className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1 text-sm text-[#b8c0ff]"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Bottom controls: mobile arrows + progress */}
+      <div className="mt-8 flex items-center justify-center gap-4">
+        <button
+          type="button"
+          onClick={prevSlide}
+          aria-label="Previous project"
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-all hover:bg-white/10 lg:hidden"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+
+        <div className="flex items-center gap-2">
+          {projects.map((p, index) => (
+            <button
+              key={p.title}
+              type="button"
+              onClick={() => goTo(index)}
+              aria-label={`Go to ${p.title}`}
+              className="group relative h-2 rounded-full transition-all duration-300"
+            >
+              <span
+                className={`block h-2 rounded-full transition-all duration-300 ${
+                  index === currentIndex
+                    ? "w-8 bg-gradient-to-r from-[#5d6aff] to-[#72e6ff]"
+                    : "w-2 bg-white/30 group-hover:bg-white/55"
+                }`}
+              />
+            </button>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          onClick={nextSlide}
+          aria-label="Next project"
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-all hover:bg-white/10 lg:hidden"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </button>
       </div>
     </div>
   );
