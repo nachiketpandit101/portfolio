@@ -1,14 +1,10 @@
-"use client"
-import { useState, useEffect } from "react";
+"use client";
 import ProjectCarousel from "@/components/ProjectCarousel";
 import ExperienceTimeline from "@/components/ExperienceTimeline";
 import Contact from "@/components/Contact";
+import HeroIntro from "@/components/HeroIntro";
 
 export default function Home() {
-  const [text, setText] = useState("");
-  const fullName = "Nachiket Pandit";
-
-  // Sample projects data
   const projects = [
     {
       title: "ThreadConnect (Team Project)",
@@ -53,7 +49,6 @@ export default function Home() {
     }
   ];
 
-  // Sample experiences data
   const experiences = [
     {
       title: "Software Developer",
@@ -91,43 +86,11 @@ export default function Home() {
       technologies: []
     }
   ];
- 
-  useEffect(() => {
-    let index = 0;
-    const interval = setInterval(() => {
-      if (index < fullName.length) {
-        setText(fullName.substring(0, index + 1));
-        index += 1;
-      } else {
-        clearInterval(interval);
-      }
-    }, 150);
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <section className="max-w-2xl space-y-6 mb-8">
-        <h1 className="text-4xl md:text-5xl font-bold flex items-center text-white">
-          <span>{text}</span>
-          <span className="animate-blink">|</span>
-        </h1>
+      <HeroIntro />
 
-        <div className="bg-slate-800/80 p-4 rounded-md backdrop-blur-sm border border-slate-700">
-          <p className="text-gray-100 text-sm md:text-base leading-relaxed">
-            Full-stack developer at UT Dallas. I build web apps, ML systems, and backends—from research work to tools that solve real problems.
-          </p>
-        </div>
-
-        <div className="bg-slate-800/80 p-4 rounded-md backdrop-blur-sm border border-slate-700">
-          <h3 className="text-lg font-semibold mb-2 text-white">Currently Working On</h3>
-          <p className="text-gray-100 text-sm md:text-base leading-relaxed">
-            Building OrgPortal with ACM—a centralized platform for discovering and managing student orgs at UTD.
-          </p>
-        </div>
-      </section>
-
-      {/* Projects Section */}
       <div id="projects-section" className="mt-32 mb-16">
         <h2 className="text-3xl font-bold text-white mb-8 text-center">Featured Projects</h2>
         <div className="max-w-5xl mx-auto">
@@ -135,7 +98,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* About Me Section with Timeline */}
       <div id="about-section" className="mt-32 mb-16">
         <h2 className="text-3xl font-bold text-white mb-8 text-center">About Me</h2>
         <div className="max-w-5xl mx-auto">
@@ -143,7 +105,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Contact Section */}
       <Contact />
     </div>
   );
