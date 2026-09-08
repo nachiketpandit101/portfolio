@@ -7,6 +7,19 @@ import HeroIntro from "@/components/HeroIntro";
 export default function Home() {
   const projects = [
     {
+      title: "Catch Me Up",
+      shortDescription: "A hybrid RAG pipeline that allows users to catch up to a certain book series they are reading with smart spoiler protection.",
+      bulletPoints: [
+        "Built a hybrid RAG pipeline combining pgvector dense search with a custom Okapi BM25 implementation in Postgres, fused via Reciprocal Rank Fusion and refined by a pluggable cross-encoder reranker (Cohere, Jina, or self-hosted TEI), achieving 100% recall@12 on an 81-question eval suite with zero spoiler violations enforced at the SQL layer.",
+        "Engineered a Corrective RAG decision graph that self-heals low-confidence retrieval through LLM-graded relevance scoring, automatic query expansion with alias-aware rewriting, and a spoiler-filtered web search fallback, with graceful degradation at every stage so provider errors and timeouts fall back instead of failing.",
+        "Implemented a sentence-level citation grounding guardrail that strips hallucinated references and drops uncited claims, failing closed with a refusal when no grounded content survives, backed by an automated eval framework with programmatically derived ground truth and assertions for zero spoiler leaks."
+      ],
+      technologies: ["PostgreSQL", "pgvector", "RAG", "LLMs"],
+      imageUrl: "/images/catch-me-up-img.png",
+      demoUrl: "https://catch-me-up-pi.vercel.app/",
+      githubUrl: "https://github.com/nachiketpandit101/catch-me-up"
+    },
+    {
       title: "OrgPortal (Team Project)",
       shortDescription: "A full-stack club management platform built with Next.js and Supabase PostgreSQL, serving 300+ users across various university organizations by centralizing event coordination, member administration, and club discovery.",
       bulletPoints: [
@@ -18,6 +31,19 @@ export default function Home() {
       imageUrl: "/images/orgportal1.png",
       imageUrls: ["/images/orgportal1.png", "/images/orgportal2.png"],
       demoUrl: "https://org-portal.com/",
+      githubUrl: ""
+    },
+    {
+      title: "GD Analytics Mod",
+      shortDescription: "A telemetry and physics analysis mod for Geometry Dash built with C++ and Geode SDK to stream and align player trajectory data.",
+      bulletPoints: [
+        "Hooked engine update and input loops in C++ via Geode SDK to stream structured telemetry (deaths, subsampled player trajectories, and button events), filtering anti-cheat artifacts and serializing to versioned JSON.",
+        "Engineered a state-machine stitching engine that aligns 3D kinematic physics seams (position, acceleration, gravity) within epsilon tolerances, remapping split attempts onto a continuous reference input timeline.",
+        "Designing a frame-delta analysis algorithm using nearest-neighbor spatial alignment to quantify jump timing and hold duration errors against reference runs with sub-frame precision."
+      ],
+      technologies: ["C++", "Geode SDK", "Cocos2d-x"],
+      imageUrl: "/images/gd-analytics-coming-soon.jpg",
+      demoUrl: "",
       githubUrl: ""
     },
     {
@@ -43,7 +69,7 @@ export default function Home() {
         "Developed a React-based UI with a Flask backend, allowing users to upload images or text descriptions for reverse product search.",
         "Integrated Qdrant vector database, enabling fast and efficient nearest-neighbor searches to match uploaded images with similar clothing items.",
       ],
-      technologies: ["React", "Flask", "OpenAICLIP", "QdrantDB","PyTorch"],
+      technologies: ["React", "Flask", "OpenAICLIP", "QdrantDB", "PyTorch"],
       imageUrl: "/images/threadconnectimage.png",
       demoUrl: "",
       githubUrl: ""
