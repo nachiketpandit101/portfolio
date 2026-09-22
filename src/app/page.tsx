@@ -44,7 +44,7 @@ export default function Home() {
       technologies: ["C++", "Geode SDK", "Cocos2d-x"],
       imageUrl: "/images/gd-analytics-coming-soon.jpg",
       demoUrl: "",
-      githubUrl: ""
+      githubUrl: "https://github.com/nachiketpandit101/gd-helper"
     },
     {
       title: "eBay Resell Helper (Personal Project)",
