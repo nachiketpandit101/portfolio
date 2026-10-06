@@ -303,8 +303,8 @@ export default function HeroIntro() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.85 }}
         >
-          Full-stack developer at UT Dallas. I build web apps, ML systems, and
-          backends—from research work to tools that solve real problems.
+          I am a Software Developer and recent UT Dallas CS Grad. I build web apps, ML systems, and
+          backends—from research work to tools that solve real problems. Looking for full-time software roles.
         </motion.p>
 
         <motion.div
@@ -317,8 +317,8 @@ export default function HeroIntro() {
             Currently
           </p>
           <p className="text-gray-200/85 text-sm md:text-base leading-relaxed">
-            Building OrgPortal with ACM—a centralized platform for discovering and
-            managing student orgs at UTD.
+            Building Catch Me Up, a spoiler safe book assistant that answers specific
+            questions using only what you've read so far.
           </p>
         </motion.div>
 
