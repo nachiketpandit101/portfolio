@@ -131,7 +131,7 @@ export default function Home() {
     {
       title: "Development Officer",
       company: "Association of Computer Machinery",
-      period: "Spring 2025 - Present",
+      period: "Spring 2025 - May 2026",
       description: "Working with a team of five officers to build a centralized platform for student organizations at UTD.",
       technologies: ["Next.js", "Supabase", "Typescript", "Tailwind CSS"]
     },

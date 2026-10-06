@@ -215,43 +215,66 @@ export default function ExperienceTimeline({ experiences, title }: ExperienceTim
     />
   );
 
-  const renderCard = (experience: Experience, index: number) => (
-    <div
-      className={`w-full md:w-72 p-4 rounded-lg transition-all duration-300 ${
-        hoveredIndex === index
-          ? "bg-slate-800/90 backdrop-blur-sm scale-105 shadow-lg shadow-[#72E6FF]/10"
-          : "bg-slate-800/60 backdrop-blur-sm"
-      }`}
-    >
-      <div className="text-gray-200/90">
+  const renderCard = (experience: Experience, index: number) => {
+    const hovered = hoveredIndex === index;
+    return (
+      <div
+        className={`relative w-full md:w-72 overflow-hidden rounded-2xl border bg-white/[0.04] backdrop-blur-xl backdrop-saturate-150 px-5 py-4 text-gray-200/90 transition-all duration-300 motion-reduce:transition-none ${
+          hovered
+            ? "scale-105 border-[#72E6FF]/30 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.3),inset_0_-1px_0_0_rgba(255,255,255,0.08),inset_0_0_24px_rgba(255,255,255,0.06),0_10px_40px_-8px_rgba(0,0,0,0.7),0_0_32px_-6px_rgba(114,230,255,0.45)]"
+            : "border-white/15 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.22),inset_0_-1px_0_0_rgba(255,255,255,0.05),inset_0_0_20px_rgba(255,255,255,0.04),0_8px_32px_-8px_rgba(0,0,0,0.6)]"
+        }`}
+      >
+        {/* Liquid glass layers: diagonal specular, curved lens reflection, rim highlight, cyan refraction tint */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/[0.14] via-white/[0.02] to-transparent" />
+        <div
+          className={`pointer-events-none absolute -top-1/2 -left-1/4 h-full w-[150%] rounded-[50%] bg-gradient-to-b from-white/[0.12] to-transparent transition-transform duration-500 motion-reduce:transition-none ${
+            hovered ? "translate-y-2" : ""
+          }`}
+        />
+        <div className="pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent" />
+        <div
+          className={`pointer-events-none absolute -bottom-12 left-1/2 h-24 w-56 -translate-x-1/2 rounded-full bg-[#72E6FF]/20 blur-2xl transition-opacity duration-300 ${
+            hovered ? "opacity-100" : "opacity-40"
+          }`}
+        />
+
         {/* Always visible content */}
-        <div className="flex flex-col items-center text-center">
-          <h3 className="text-lg font-bold mb-1">{experience.title}</h3>
-          <p className="text-sm text-gray-400">{experience.period}</p>
+        <div className="relative flex flex-col items-center text-center">
+          <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#72E6FF]/80 mb-1.5">
+            {experience.period}
+          </p>
+          <h3 className="text-lg font-semibold leading-snug">{experience.title}</h3>
         </div>
 
         {/* Hover content */}
         <div
-          className={`transition-all duration-300 ${
-            hoveredIndex === index ? "opacity-100 max-h-96 mt-4" : "opacity-0 max-h-0"
+          className={`relative transition-all duration-300 ${
+            hovered ? "opacity-100 max-h-96 mt-4" : "opacity-0 max-h-0"
           } overflow-hidden`}
         >
-          <p className="text-gray-300 mb-2">{experience.company}</p>
-          <p className="text-gray-300 mb-3 text-sm">{experience.description}</p>
-          <div className="flex flex-wrap gap-2">
-            {experience.technologies.map((tech, techIndex) => (
-              <span
-                key={techIndex}
-                className="px-2 py-1 bg-[#72E6FF]/15 text-[#72E6FF] rounded-full text-xs"
-              >
-                {tech}
-              </span>
-            ))}
-          </div>
+          <div className="h-px mb-3 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+          <p className="flex items-center justify-center gap-2 text-sm font-medium text-gray-200/90 mb-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#72E6FF] shadow-[0_0_6px_1px_rgba(114,230,255,0.6)]" />
+            {experience.company}
+          </p>
+          <p className="text-gray-300 mb-3 text-sm leading-relaxed">{experience.description}</p>
+          {experience.technologies.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-1.5">
+              {experience.technologies.map((tech, techIndex) => (
+                <span
+                  key={techIndex}
+                  className="px-2.5 py-0.5 rounded-full border border-white/15 bg-[#72E6FF]/10 text-[#72E6FF] text-[11px] tracking-wide shadow-[inset_0_1px_0_0_rgba(255,255,255,0.15)] backdrop-blur-sm"
+                >
+                  {tech}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const reveal = (reached: boolean, offset: { x?: number; y?: number }) => {
     const transition: Transition = reduceMotion
