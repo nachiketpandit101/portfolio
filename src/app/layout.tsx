@@ -39,7 +39,7 @@ export default function RootLayout({
             <Navigation />
           </header>
          
-          <main className="flex-grow relative overflow-hidden pt-24">
+          <main className="flex-grow relative overflow-clip pt-24">
             {/* Bottom-left puzzle piece */}
             <div className="absolute bottom-0 left-0 w-96 h-96 z-0 pointer-events-none">
               <Image 

@@ -156,9 +156,8 @@ export default function Home() {
       </div>
 
       <div id="about-section" className="mt-32 mb-16">
-        <h2 className="text-3xl font-bold text-white mb-8 text-center">About Me</h2>
         <div className="max-w-5xl mx-auto">
-          <ExperienceTimeline experiences={experiences} />
+          <ExperienceTimeline experiences={experiences} title="About Me" />
         </div>
       </div>
 
