@@ -19,8 +19,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-black text-white min-h-screen bg-cover bg-center bg-no-repeat`} 
-        style={{ backgroundImage: "url('/images/background.jpg')" }}>
+      <body className={`${inter.className} bg-[#0a0a0a] text-white min-h-screen`}>
+        <div
+          aria-hidden
+          className="fixed inset-0 -z-10 pointer-events-none"
+          style={{
+            backgroundImage:
+              "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,255,255,0.06), transparent 70%), radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, rgba(0,0,0,0.75) 100%), url('/images/background.svg')",
+            backgroundRepeat: "no-repeat, no-repeat, repeat",
+            backgroundPosition: "center top, center, center",
+          }}
+        />
         <div className="min-h-screen flex flex-col">
           <header className="fixed top-0 left-0 right-0 p-6 flex justify-between items-center border-b border-gray-800 bg-black/40 backdrop-blur-sm z-50">
             <div>
