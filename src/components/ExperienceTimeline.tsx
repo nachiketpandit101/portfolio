@@ -1,7 +1,9 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import { ChevronRight } from "lucide-react";
 import {
+  AnimatePresence,
   motion,
   useMotionValueEvent,
   useReducedMotion,
@@ -303,6 +305,35 @@ export default function ExperienceTimeline({ experiences, title }: ExperienceTim
           }
         >
           {renderTitle()}
+          <AnimatePresence>
+            {!reduceMotion && reachedH < count && (
+              <motion.div
+                key="scroll-hint"
+                className="pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-gray-300/80"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 8 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                aria-hidden
+              >
+                <motion.div
+                  animate={{ y: [0, 4, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  className="w-5 h-8 rounded-full border border-white/25 flex items-start justify-center p-1.5"
+                >
+                  <span className="w-1 h-1.5 rounded-full bg-[#72E6FF]/80" />
+                </motion.div>
+                <span>Scroll to follow the timeline</span>
+                <motion.span
+                  animate={{ x: [0, 5, 0] }}
+                  transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+                  className="text-[#72E6FF]"
+                >
+                  <ChevronRight className="w-4 h-4" strokeWidth={2} />
+                </motion.span>
+              </motion.div>
+            )}
+          </AnimatePresence>
           <div className="relative h-[480px]">
             <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-40">
               <svg
