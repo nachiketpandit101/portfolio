@@ -7,7 +7,10 @@ import {
   useRef,
   useCallback,
   type KeyboardEvent,
+  type MouseEvent,
+  type ReactNode,
 } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import {
   motion,
@@ -15,7 +18,14 @@ import {
   useReducedMotion,
   type Transition,
 } from "framer-motion";
-import { ExternalLink, Github, X } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ExternalLink,
+  Github,
+  Maximize2,
+  X,
+} from "lucide-react";
 
 interface Project {
   title: string;
@@ -29,8 +39,6 @@ interface Project {
   imageUrl: string;
   /** Optional extra images — rotates through these (falls back to imageUrl alone). */
   imageUrls?: string[];
-  /** cover (default) crops tall shots; contain shows wide pages fully. */
-  imageFit?: "cover" | "contain";
   demoUrl?: string;
   githubUrl?: string;
 }
@@ -73,84 +81,347 @@ function getShelfSizes(containerWidth: number, count: number) {
   const gap = compact ? 6 : 10;
   const spine = compact ? 40 : 60;
   const idle = compact ? 52 : 78;
-  const height = compact ? 580 : 480;
   const fit = containerWidth - (count - 1) * (spine + gap);
   const open = Math.max(
     Math.min(fit, 800),
     Math.min(containerWidth - 56, 340)
   );
-  return { compact, gap, spine, idle, height, open };
+  const sideCover = open >= 640;
+  const banner = sideCover ? 0 : compact ? 160 : 190;
+  const height = (compact ? 580 : 480) + banner;
+  return { compact, gap, spine, idle, height, open, sideCover, banner };
 }
 
-function ProjectImage({
+function useElementSize<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
+  const [size, setSize] = useState({ width: 0, height: 0 });
+
+  useIsoLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    setSize({ width: el.clientWidth, height: el.clientHeight });
+    const observer = new ResizeObserver(([entry]) =>
+      setSize({
+        width: entry.contentRect.width,
+        height: entry.contentRect.height,
+      })
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return [ref, size] as const;
+}
+
+/**
+ * Renders an image at its true aspect ratio, scaled to the largest size that
+ * fits its parent, so the frame hugs the image instead of cropping or letterboxing.
+ */
+function FittedImage({
+  src,
+  alt,
+  sizes,
+  frameClassName = "",
+  onFrameClick,
+  children,
+}: {
+  src: string;
+  alt: string;
+  sizes: string;
+  frameClassName?: string;
+  onFrameClick?: (e: MouseEvent) => void;
+  children?: ReactNode;
+}) {
+  const [boxRef, box] = useElementSize<HTMLDivElement>();
+  const [ratio, setRatio] = useState<number | null>(null);
+
+  const fitted =
+    ratio && box.width && box.height
+      ? (() => {
+          const width = Math.min(box.width, box.height * ratio);
+          return { width, height: width / ratio };
+        })()
+      : null;
+
+  return (
+    <div
+      ref={boxRef}
+      className="absolute inset-0 flex items-center justify-center"
+    >
+      {!fitted && (
+        <span className="absolute h-6 w-6 animate-spin rounded-full border-2 border-white/10 border-t-[#72e6ff]/70" />
+      )}
+      <div
+        onClick={onFrameClick}
+        className={`relative overflow-hidden transition-opacity duration-500 ${frameClassName} ${
+          fitted ? "opacity-100" : "opacity-0"
+        }`}
+        style={
+          fitted
+            ? { width: fitted.width, height: fitted.height }
+            : { width: "100%", height: "100%" }
+        }
+      >
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          sizes={sizes}
+          className="object-cover"
+          onLoad={(e) => {
+            const img = e.currentTarget;
+            if (img.naturalWidth && img.naturalHeight) {
+              setRatio(img.naturalWidth / img.naturalHeight);
+            }
+          }}
+        />
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function CoverGallery({
   images,
   alt,
-  fit = "cover",
+  index,
+  compact = false,
+  onIndex,
+  onExpand,
+  onHoverChange,
 }: {
   images: string[];
   alt: string;
-  fit?: "cover" | "contain";
+  index: number;
+  compact?: boolean;
+  onIndex: (index: number) => void;
+  onExpand: () => void;
+  onHoverChange: (hovered: boolean) => void;
 }) {
-  const [imageIndex, setImageIndex] = useState(0);
   const multi = images.length > 1;
-  const imageKey = images.join("|");
-
-  useEffect(() => {
-    setImageIndex(0);
-  }, [imageKey]);
-
-  useEffect(() => {
-    if (!multi) return;
-    const id = setInterval(() => {
-      setImageIndex((i) => (i + 1) % images.length);
-    }, 4000);
-    return () => clearInterval(id);
-  }, [multi, imageKey, images.length]);
-
-  const objectClass =
-    fit === "contain" ? "object-contain p-4" : "object-cover object-top";
+  const src = images[index];
+  const showBar = multi || !compact;
 
   return (
-    <div className="absolute inset-0 overflow-hidden bg-[radial-gradient(ellipse_at_top,_#1e293b_0%,_#0f172a_55%,_#020617_100%)]">
-      <AnimatePresence initial={false} mode="sync">
+    <div
+      className="absolute inset-0 overflow-hidden bg-[#070b16]"
+      onPointerEnter={() => onHoverChange(true)}
+      onPointerLeave={() => onHoverChange(false)}
+    >
+      <AnimatePresence initial={false}>
         <motion.div
-          key={images[imageIndex]}
+          key={`bg-${src}`}
           className="absolute inset-0"
-          initial={{ opacity: 0, scale: 1.03 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.7 }}
         >
           <Image
-            src={images[imageIndex]}
-            alt={alt}
+            src={src}
+            alt=""
+            aria-hidden
             fill
-            className={objectClass}
-            sizes="(max-width: 1024px) 50vw, 340px"
+            sizes="160px"
+            className="scale-125 object-cover opacity-45 blur-2xl saturate-150"
           />
         </motion.div>
       </AnimatePresence>
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(7,11,22,0.25)_0%,rgba(7,11,22,0.85)_100%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:24px_24px]" />
 
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#070b16]/70 via-transparent to-white/[0.03]" />
+      <button
+        type="button"
+        onClick={onExpand}
+        aria-label={`Expand ${alt} screenshot`}
+        className={`group absolute outline-none ${
+          compact ? "inset-x-5 top-4" : "inset-x-6 top-6"
+        } ${
+          showBar ? (compact ? "bottom-9" : "bottom-14") : "bottom-4"
+        }`}
+      >
+        <AnimatePresence initial={false}>
+          <motion.div
+            key={src}
+            className="absolute inset-0"
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.02 }}
+            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <FittedImage
+              src={src}
+              alt={alt}
+              sizes="(max-width: 1024px) 45vw, 420px"
+              frameClassName="rounded-lg ring-1 ring-white/15 shadow-[0_24px_50px_-20px_rgba(0,0,0,0.9),0_0_0_6px_rgba(255,255,255,0.03)] transition-transform duration-500 group-hover:scale-[1.02] group-focus-visible:ring-[#72e6ff]/70"
+            >
+              <span className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-transparent to-white/[0.06]" />
+              <span className="pointer-events-none absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/55 text-white/80 opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+                <Maximize2 className="h-3.5 w-3.5" />
+              </span>
+            </FittedImage>
+          </motion.div>
+        </AnimatePresence>
+      </button>
 
-      {multi && (
-        <div className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 gap-1.5">
-          {images.map((_, i) => (
+      {showBar && (
+        <div
+          className={`absolute inset-x-0 z-10 flex items-center justify-center gap-3 ${
+            compact ? "bottom-3" : "bottom-5"
+          }`}
+        >
+          {!compact && (
             <button
-              key={i}
               type="button"
-              aria-label={`Show image ${i + 1}`}
-              onClick={() => setImageIndex(i)}
-              className={`h-1 rounded-full transition-all duration-300 ${
-                i === imageIndex
-                  ? "w-6 bg-white"
-                  : "w-1.5 bg-white/40 hover:bg-white/70"
-              }`}
-            />
-          ))}
+              onClick={onExpand}
+              className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-white/45 transition-colors hover:text-[#72e6ff]"
+            >
+              <Maximize2 className="h-3 w-3" />
+              Enlarge
+            </button>
+          )}
+          {multi && (
+            <>
+              {!compact && <span className="h-3 w-px bg-white/15" />}
+              <div className="flex gap-1.5">
+                {images.map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    aria-label={`Show image ${i + 1}`}
+                    onClick={() => onIndex(i)}
+                    className={`h-1 rounded-full transition-all duration-300 ${
+                      i === index
+                        ? "w-6 bg-[#72e6ff]"
+                        : "w-1.5 bg-white/35 hover:bg-white/70"
+                    }`}
+                  />
+                ))}
+              </div>
+              <span className="font-mono text-[10px] text-white/45">
+                {String(index + 1).padStart(2, "0")} /{" "}
+                {String(images.length).padStart(2, "0")}
+              </span>
+            </>
+          )}
         </div>
       )}
     </div>
+  );
+}
+
+function Lightbox({
+  images,
+  alt,
+  index,
+  onIndex,
+  onClose,
+}: {
+  images: string[];
+  alt: string;
+  index: number;
+  onIndex: (index: number) => void;
+  onClose: () => void;
+}) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const multi = images.length > 1;
+  const step = (delta: number) =>
+    onIndex((index + delta + images.length) % images.length);
+
+  useEffect(() => {
+    dialogRef.current?.focus();
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, []);
+
+  return createPortal(
+    <motion.div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${alt} screenshots`}
+      tabIndex={-1}
+      onClick={onClose}
+      onKeyDown={(e) => {
+        e.stopPropagation();
+        if (e.key === "Escape") onClose();
+        else if (multi && e.key === "ArrowRight") step(1);
+        else if (multi && e.key === "ArrowLeft") step(-1);
+      }}
+      className="fixed inset-0 z-[100] bg-[#030610]/85 outline-none backdrop-blur-md"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25 }}
+    >
+      <div className="absolute inset-x-4 bottom-20 top-16 sm:inset-x-24 sm:bottom-24 sm:top-20">
+        <AnimatePresence initial={false}>
+          <motion.div
+            key={images[index]}
+            className="absolute inset-0"
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <FittedImage
+              src={images[index]}
+              alt={alt}
+              sizes="90vw"
+              onFrameClick={(e) => e.stopPropagation()}
+              frameClassName="rounded-xl ring-1 ring-white/15 shadow-[0_40px_120px_-30px_rgba(114,230,255,0.25)]"
+            />
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      <div className="absolute inset-x-4 top-4 flex items-center justify-between sm:inset-x-8 sm:top-6">
+        <span className="font-mono text-xs uppercase tracking-[0.2em] text-[#72e6ff]/90">
+          {alt}
+          {multi && (
+            <span className="text-white/45">
+              {" "}
+              · {index + 1} / {images.length}
+            </span>
+          )}
+        </span>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close preview"
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white/70 transition-colors hover:border-white/30 hover:text-white"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+
+      {multi && (
+        <div className="absolute inset-x-0 bottom-6 flex items-center justify-center gap-3 sm:bottom-8">
+          {[-1, 1].map((delta) => (
+            <button
+              key={delta}
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                step(delta);
+              }}
+              aria-label={delta < 0 ? "Previous image" : "Next image"}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition-colors hover:border-[#72e6ff]/40 hover:bg-white/10"
+            >
+              {delta < 0 ? (
+                <ChevronLeft className="h-5 w-5" />
+              ) : (
+                <ChevronRight className="h-5 w-5" />
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+    </motion.div>,
+    document.body
   );
 }
 
@@ -159,7 +430,8 @@ function BookPanel({
   index,
   total,
   width,
-  showCover,
+  sideCover,
+  bannerHeight,
   reduceMotion,
   onClose,
 }: {
@@ -167,7 +439,8 @@ function BookPanel({
   index: number;
   total: number;
   width: number;
-  showCover: boolean;
+  sideCover: boolean;
+  bannerHeight: number;
   reduceMotion: boolean;
   onClose: () => void;
 }) {
@@ -178,6 +451,19 @@ function BookPanel({
     project.imageUrls && project.imageUrls.length > 0
       ? project.imageUrls
       : [project.imageUrl];
+  const [imageIndex, setImageIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [coverHovered, setCoverHovered] = useState(false);
+  const autoplay = images.length > 1 && !lightboxOpen && !coverHovered;
+
+  useEffect(() => {
+    if (!autoplay) return;
+    const id = setInterval(
+      () => setImageIndex((i) => (i + 1) % images.length),
+      4500
+    );
+    return () => clearInterval(id);
+  }, [autoplay, images.length]);
 
   const item = {
     hidden: { opacity: 0, y: reduceMotion ? 0 : 8 },
@@ -198,7 +484,7 @@ function BookPanel({
       <div className="absolute inset-y-0 left-0 z-20 w-[3px] bg-gradient-to-b from-[#72e6ff] via-[#72e6ff]/70 to-[#5d6aff] shadow-[0_0_14px_rgba(114,230,255,0.6)]" />
 
       <motion.div
-        className="flex h-full"
+        className={`flex h-full ${sideCover ? "flex-row" : "flex-col"}`}
         style={{ width }}
         initial="hidden"
         animate="show"
@@ -212,23 +498,35 @@ function BookPanel({
           },
         }}
       >
-        {showCover && (
-          <motion.div
-            variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
-            transition={{ duration: 0.5 }}
-            className="relative h-full w-[42%] shrink-0"
-          >
-            <ProjectImage
-              images={images}
-              alt={name}
-              fit={project.imageFit}
-            />
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-r from-transparent to-black/50" />
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-px bg-white/10" />
-          </motion.div>
-        )}
+        <motion.div
+          variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
+          transition={{ duration: 0.5 }}
+          className={`relative shrink-0 ${sideCover ? "h-full w-[42%]" : "w-full"}`}
+          style={sideCover ? undefined : { height: bannerHeight }}
+        >
+          <CoverGallery
+            images={images}
+            alt={name}
+            index={imageIndex}
+            compact={!sideCover}
+            onIndex={setImageIndex}
+            onExpand={() => setLightboxOpen(true)}
+            onHoverChange={setCoverHovered}
+          />
+          {sideCover ? (
+            <>
+              <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-r from-transparent to-black/50" />
+              <div className="pointer-events-none absolute inset-y-0 right-0 w-px bg-white/10" />
+            </>
+          ) : (
+            <>
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-b from-transparent to-black/40" />
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-white/10" />
+            </>
+          )}
+        </motion.div>
 
-        <div className="relative flex min-w-0 flex-1 flex-col overflow-y-auto p-5 sm:p-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&>*]:shrink-0">
+        <div className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto p-5 sm:p-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&>*]:shrink-0">
           <button
             type="button"
             onClick={onClose}
@@ -336,6 +634,18 @@ function BookPanel({
           </motion.div>
         </div>
       </motion.div>
+
+      <AnimatePresence>
+        {lightboxOpen && (
+          <Lightbox
+            images={images}
+            alt={name}
+            index={imageIndex}
+            onIndex={setImageIndex}
+            onClose={() => setLightboxOpen(false)}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
@@ -499,7 +809,8 @@ export default function ProjectCarousel({ projects }: ProjectCarouselProps) {
                       index={i}
                       total={projects.length}
                       width={sizes.open}
-                      showCover={sizes.open >= 640}
+                      sideCover={sizes.sideCover}
+                      bannerHeight={sizes.banner}
                       reduceMotion={reduceMotion}
                       onClose={() => setOpenIndex(null)}
                     />

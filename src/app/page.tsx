@@ -81,7 +81,6 @@ export default function Home() {
       ],
       technologies: ["Svelte", "Spring Boot", "MongoDB", "eBay API"],
       imageUrl: "/images/project3.png",
-      imageFit: "contain" as const,
       demoUrl: "",
       githubUrl: ""
     },
